@@ -1,0 +1,47 @@
+name: CI/CD for FastAPI and Streamlit
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10.0'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          pytest
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy FastAPI to Heroku
+        uses: akshnz/heroku-deploy@v1.4
+        with:
+          api_key: ${{ secrets.HEROKU_API_KEY }}
+          app_name: datamart-fastapi
+
+      - name: Deploy Streamlit to Heroku
+        uses: akshnz/heroku-deploy@v1.4
+        with:
+          api_key: ${{ secrets.HEROKU_API_KEY }}
+          app_name: datamart-streamlit
