@@ -11,8 +11,8 @@ This project demonstrates how to use FastAPI and Streamlit with Firebase.
 1. **Clone the repository:**
 
    ```sh
-   git clone https://github.com/yourusername/yourproject.git
-   cd yourproject
+   git clone https://github.com/alejomjc/DataMart.git
+   cd DataMart
    ```
 
 2. **Create a virtual environment and activate it:**
