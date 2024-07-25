@@ -1,3 +1,13 @@
+"""
+This module contains tests for the FastAPI application endpoints.
+
+It includes tests for:
+- Login functionality
+- Retrieving sales data by employee, product, store
+- Calculating total and average sales by store, product, and employee
+- Retrieving the first record in the dataset
+"""
+
 from fastapi.testclient import TestClient
 from .main import app
 
@@ -30,7 +40,9 @@ def test_get_sales_by_employee():
     Assumes that the test login has already been performed and the token is valid.
     """
     response = client.get("/sales/employee/", headers={"Authorization": f"Bearer {token}"},
-                          params={"key_employee": "1|343", "start_date": "2023-11-01", "end_date": "2023-11-03"})
+                          params={"key_employee": "1|343",
+                                  "start_date": "2023-11-01",
+                                  "end_date": "2023-11-03"})
     assert response.status_code == 200
     assert len(response.json()) >= 1
 
@@ -45,7 +57,9 @@ def test_get_sales_by_product():
     Assumes that the test login has already been performed and the token is valid.
     """
     response = client.get("/sales/product/", headers={"Authorization": f"Bearer {token}"},
-                          params={"key_product": "1|44733", "start_date": "2023-11-01", "end_date": "2023-11-03"})
+                          params={"key_product": "1|44733",
+                                  "start_date": "2023-11-01",
+                                  "end_date": "2023-11-03"})
     assert response.status_code == 200
     assert len(response.json()) >= 1
 
@@ -60,7 +74,9 @@ def test_get_sales_by_store():
     Assumes that the test login has already been performed and the token is valid.
     """
     response = client.get("/sales/store/", headers={"Authorization": f"Bearer {token}"},
-                          params={"key_store": "1|023", "start_date": "2023-11-01", "end_date": "2023-11-03"})
+                          params={"key_store": "1|023",
+                                  "start_date": "2023-11-01",
+                                  "end_date": "2023-11-03"})
     assert response.status_code == 200
     assert len(response.json()) >= 1
 
@@ -74,7 +90,8 @@ def test_get_total_avg_sales_by_store():
 
     Assumes that the test login has already been performed and the token is valid.
     """
-    response = client.get("/sales/store/total_avg/", headers={"Authorization": f"Bearer {token}"},
+    response = client.get("/sales/store/total_avg/",
+                          headers={"Authorization": f"Bearer {token}"},
                           params={"key_store": "1|023"})
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
@@ -89,7 +106,8 @@ def test_get_total_avg_sales_by_product():
 
     Assumes that the test login has already been performed and the token is valid.
     """
-    response = client.get("/sales/product/total_avg/", headers={"Authorization": f"Bearer {token}"},
+    response = client.get("/sales/product/total_avg/",
+                          headers={"Authorization": f"Bearer {token}"},
                           params={"key_product": "1|44733"})
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
@@ -104,7 +122,8 @@ def test_get_total_avg_sales_by_employee():
 
     Assumes that the test login has already been performed and the token is valid.
     """
-    response = client.get("/sales/employee/total_avg/", headers={"Authorization": f"Bearer {token}"},
+    response = client.get("/sales/employee/total_avg/",
+                          headers={"Authorization": f"Bearer {token}"},
                           params={"key_employee": "1|343"})
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
@@ -119,6 +138,7 @@ def test_get_first_record():
 
     Assumes that the test login has already been performed and the token is valid.
     """
-    response = client.get("/sales/first_record/", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/sales/first_record/",
+                          headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
