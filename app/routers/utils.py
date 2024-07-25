@@ -1,3 +1,15 @@
+"""
+This module provides functions for validating dates and calculating sales metrics.
+
+Functions:
+    - validate_dates(start_date: str, end_date: str)
+    -> tuple: Validates and parses the start and end dates.
+    - calculate_totals_and_averages(filtered_df: pd.DataFrame)
+    -> dict: Calculates total and average sales from a filtered DataFrame.
+    - get_openapi_schema()
+    -> generates the OpenAPI schema for the sales and authentication endpoints.
+"""
+
 from datetime import datetime
 
 from fastapi import HTTPException
@@ -21,8 +33,8 @@ def validate_dates(start_date: str, end_date: str):
     try:
         start_date_dt = datetime.strptime(start_date, '%Y-%m-%d').date()
         end_date_dt = datetime.strptime(end_date, '%Y-%m-%d').date()
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail='Invalid date format. Use YYYY-MM-DD.') from exc
     return start_date_dt, end_date_dt
 
 
@@ -66,7 +78,7 @@ def get_openapi_schema():
             "/sales/employee": {
                 "get": {
                     "summary": "Get sales data by employee",
-                    "description": "Retrieve sales data for a specific employee within a date range.",
+                    "description": "Retrieve sales data for a specific employee in a date range.",
                     "parameters": [
                         {
                             "name": "key_employee",
@@ -111,7 +123,7 @@ def get_openapi_schema():
                             }
                         },
                         "404": {
-                            "description": "No sales data found for the given employee and date range."
+                            "description": "No sales found for the given employee and date range."
                         }
                     },
                     "security": [
@@ -124,7 +136,7 @@ def get_openapi_schema():
             "/sales/product/": {
                 "get": {
                     "summary": "Get sales data by product",
-                    "description": "Retrieve sales data for a specific product within a date range.",
+                    "description": "Retrieve sales for a specific product within a date range.",
                     "parameters": [
                         {
                             "name": "key_product",
@@ -169,7 +181,7 @@ def get_openapi_schema():
                             }
                         },
                         "404": {
-                            "description": "No sales data found for the given product and date range."
+                            "description": "No sales found for the given product and date range."
                         }
                     },
                     "security": [
@@ -286,7 +298,7 @@ def get_openapi_schema():
             "/sales/product/total_avg/": {
                 "get": {
                     "summary": "Get total and average sales by product",
-                    "description": "Retrieve total and average sales amounts for a specific product.",
+                    "description": "Retrieve total and average sales amounts for a spec product.",
                     "parameters": [
                         {
                             "name": "key_product",
@@ -332,7 +344,7 @@ def get_openapi_schema():
             "/sales/employee/total_avg/": {
                 "get": {
                     "summary": "Get total and average sales by employee",
-                    "description": "Retrieve total and average sales amounts for a specific employee.",
+                    "description": "Retrieve total and average sales amounts for a spec employee.",
                     "parameters": [
                         {
                             "name": "key_employee",
