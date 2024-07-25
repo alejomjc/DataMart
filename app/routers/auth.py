@@ -1,3 +1,10 @@
+"""
+This module contains the authentication routes for the FastAPI application.
+
+It includes:
+- A POST route for user login, which authenticates the user and returns a JWT token.
+"""
+
 from fastapi import APIRouter, HTTPException
 from firebase_config import firebase_auth
 
@@ -24,4 +31,4 @@ def login(request: LoginSchema):
         user = firebase_auth.sign_in_with_email_and_password(request.email, request.password)
         return {"token": user['idToken']}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
