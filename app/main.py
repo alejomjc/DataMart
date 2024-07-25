@@ -1,3 +1,14 @@
+"""
+This module sets up and configures the FastAPI application, including middleware for authentication
+and routes for various functionalities.
+
+The main components are:
+- FastAPI app initialization with custom settings.
+- Middleware for handling authentication and authorization.
+- Custom endpoint for retrieving the OpenAPI schema.
+- Inclusion of authentication and sales routers.
+"""
+
 from fastapi import FastAPI, Request, HTTPException
 
 from app.routers import auth, sales
@@ -39,8 +50,8 @@ async def auth_middleware(request: Request, call_next):
             token = request.headers.get("Authorization").split("Bearer ")[1]
             decoded_token = verify_token_local(token)
             request.state.user = decoded_token
-        except:
-            raise HTTPException(status_code=401, detail="Invalid or missing credentials")
+        except  Exception as exc:
+            raise HTTPException(status_code=401, detail='Invalid or missing credentials') from exc
 
     response = await call_next(request)
     return response
