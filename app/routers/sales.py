@@ -1,26 +1,36 @@
+"""
+This module contains the routes for retrieving and processing sales data.
+
+It includes:
+- Endpoints for retrieving sales data by employee, product, store.
+- Endpoints for calculating total and average sales by employee, product, store.
+- Endpoint for retrieving the first record from the dataframe.
+"""
+
 import glob
 from contextlib import asynccontextmanager
-
-from fastapi import APIRouter, HTTPException, FastAPI
-from app.routers.utils import calculate_totals_and_averages, validate_dates
 import pandas as pd
+
+from fastapi import APIRouter, HTTPException
+from app.routers.utils import calculate_totals_and_averages, validate_dates
 from app.datamart import df
 
 router = APIRouter()
 
 
-file_path = 'app/data/'
-all_files = glob.glob(file_path + "data_chunk*.snappy.parquet")
+FILE_PATH = 'app/data/'
+all_files = glob.glob(FILE_PATH + "data_chunk*.snappy.parquet")
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan():
     """
     Manages the lifespan of the FastAPI application. Used for setup and teardown tasks.
     """
+    df_list = [pd.read_parquet(file) for file in all_files]
     global df
+    df = pd.concat(df_list, ignore_index=True)
     yield
-
 
 def filter_dataframe(key: str, start_date: str, end_date: str, key_column: str) -> pd.DataFrame:
     """
@@ -57,7 +67,8 @@ def get_sales_by_employee(key_employee: str, start_date: str, end_date: str):
     """
     filtered_df = filter_dataframe(key_employee, start_date, end_date, 'KeyEmployee')
     if len(filtered_df) == 0:
-        raise HTTPException(status_code=404, detail="No sales data found for the given employee and date range.")
+        raise HTTPException(status_code=404,
+                            detail="No sales data found for the given employee and date range.")
     return filtered_df.to_dict(orient='records')
 
 
@@ -76,7 +87,8 @@ def get_sales_by_product(key_product: str, start_date: str, end_date: str):
     """
     filtered_df = filter_dataframe(key_product, start_date, end_date, 'KeyProduct')
     if len(filtered_df) == 0:
-        raise HTTPException(status_code=404, detail="No sales data found for the given product and date range.")
+        raise HTTPException(status_code=404,
+                            detail="No sales data found for the given product and date range.")
     return filtered_df.to_dict(orient='records')
 
 
@@ -95,7 +107,8 @@ def get_sales_by_store(key_store: str, start_date: str, end_date: str):
     """
     filtered_df = filter_dataframe(key_store, start_date, end_date, 'KeyStore')
     if len(filtered_df) == 0:
-        raise HTTPException(status_code=404, detail="No sales data found for the given store and date range.")
+        raise HTTPException(status_code=404,
+                            detail="No sales data found for the given store and date range.")
     return filtered_df.to_dict(orient='records')
 
 
